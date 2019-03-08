@@ -19,6 +19,7 @@ import android.util.Base64
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import com.github.nkzawa.emitter.Emitter
 import com.github.nkzawa.socketio.client.IO
 import com.github.nkzawa.socketio.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
@@ -27,6 +28,9 @@ import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.ArrayList
+import com.example.socketmock.R;
+import org.json.JSONArray
+import org.json.JSONException
 
 class MainActivity : AppCompatActivity() {
 
@@ -52,6 +56,20 @@ class MainActivity : AppCompatActivity() {
     lateinit internal var photoUri: Uri
     var imageFileName: String = ""
 
+    private val onNewMessage = object : Emitter.Listener {
+        override fun call(vararg args: Any) {
+            this@MainActivity!!.runOnUiThread(Runnable {
+
+                val data = args[0] as JSONArray
+
+                
+
+
+            })
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -65,12 +83,15 @@ class MainActivity : AppCompatActivity() {
 
         mSocket = IO.socket("https://sleepy-meadow-73150.herokuapp.com")
         mSocket.connect();
+
+        mSocket.on( "updateScreenList" , onNewMessage )
+
     }
 
     fun join( view : View ){
 
         var jsonObject = JSONObject()
-        jsonObject.put( "name" , "TestMobileUser" )
+        jsonObject.put( "name" , "Admin" )
         jsonObject.put( "room" , "TestRoom" )
         mSocket.emit( "join" , jsonObject )
 
